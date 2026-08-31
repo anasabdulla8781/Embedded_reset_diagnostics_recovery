@@ -12,11 +12,22 @@
 #include "service.h"
 
 
+/// Project specific macros
+
+#define PROJECT_USART_MODULE	USART2
+#define PROJECT_SYSTEM_CLOCK	HSE
+
+
 /// Variable declartion ( Configurations )
 
 /// GPIO
 extern const GPIO_PinConfig_t gpio_pin_config[] ;
 extern const uint8_t gpio_pin_config_size;
+
+
+// UART
+extern const UART_Module_Config uart_config[];
+extern const uint8_t uart_config_size ;
 
 /// ADC
 extern const ADC_Channel_config_t adc1_channel_config[];

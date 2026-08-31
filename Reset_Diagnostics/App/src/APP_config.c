@@ -10,20 +10,47 @@
 
 #include "APP_config.h"
 
-
-/// ADC Buffer initialisation
-volatile uint32_t adc_measurement[3] = {0u};
+// ******************************  GPIO Configuration - START *************************************************************
 
 /// The gpio pins needed to be configured for this project
 const GPIO_PinConfig_t gpio_pin_config[] = {
 
-		{	gpioa_ptr,	PIN0,	PIN_ANALOG_INPUT,	PORTA	},
-		{	gpioa_ptr,	PIN1,	PIN_ANALOG_INPUT,	PORTA	},
-		{	gpioa_ptr,	PIN3,	PIN_ANALOG_INPUT,	PORTA	},
-		{	gpiob_ptr,	PIN1,	PIN_ANALOG_INPUT,	PORTB	},
+		/// Generic GPIO Pins used in this project
+		{	gpioa_ptr,	PIN0,	PIN_ANALOG_INPUT,	PORTA	,AF_INVALID},
+		{	gpioa_ptr,	PIN1,	PIN_ANALOG_INPUT,	PORTA	,AF_INVALID},
+		{	gpiob_ptr,	PIN1,	PIN_ANALOG_INPUT,	PORTB	,AF_INVALID},
+
+		// GPIO Pin configurations for UART2
+		{	gpioa_ptr , PIN2 , PIN_ALTERNATE_FUNCTION , PORTA, AF7},
+		{	gpioa_ptr , PIN3 , PIN_ALTERNATE_FUNCTION , PORTA, AF7},
 };
 
 const uint8_t gpio_pin_config_size = sizeof(gpio_pin_config)/sizeof(gpio_pin_config[0]);
+
+// ******************************  GPIO Configuration - END   *************************************************************
+
+
+
+
+// ******************************  UART Configuration - START *************************************************************
+
+const UART_Module_Config uart_config[] = {
+		{
+				usart2_ptr,				/// Module pointer UART - Pointer for uart module used
+				USART_MODULE2,			/// Module number UART - Module number for uart module
+				9600,					/// Uart_baud rate
+				0,						/// Uart Oversampling
+				16000000				/// Clock
+		}
+};
+
+const uint8_t uart_config_size = sizeof(uart_config)/sizeof(uart_config[0]);
+
+
+// ******************************  UART Configuration - END *************************************************************
+
+/// ADC Buffer initialisation
+volatile uint32_t adc_measurement[3] = {0u};
 
 
 // ***********************************************************************************************

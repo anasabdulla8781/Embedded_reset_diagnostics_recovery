@@ -12,6 +12,7 @@
 #include <APP_feature.h>
 #include <STM32_EXTI.h>
 #include "APP_task.h"
+#include "STM32_UART.h"
 
 
 uint32_t tim2_interrupt_count;
@@ -43,6 +44,10 @@ void nvic_init(uint8_t interrupt_number)
 			nvic_ptr->IPR[6] = (5 << 4);
 			// enabling the interrput
 			nvic_ptr->ISER[0] |= ENABLE_EXTIO_INTERRUPT;
+			break;
+
+		case 38:
+			nvic_ptr->ISER[1] |= ENABLE_USART2_INTERRUPT;
 
 		default:
 			break;
@@ -105,5 +110,22 @@ void EXTI0_IRQHandler(void)
 		exti_ptr->IMR |= (1<<0);
 		// Perform context switching if needed
 		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+	}
+}
+
+
+void USART2_IRQHandler(void)
+{
+	if (usart2_ptr->SR & (1 <<7))			/// TXIE is enabled or not
+	{
+		if (*string == '\0')
+		{
+			usart2_ptr->DR = '\0';
+			usart2_ptr->CR1 &= ~(1<<7);
+		}
+		else
+		{
+			usart2_ptr->DR = *string++;
+		}
 	}
 }

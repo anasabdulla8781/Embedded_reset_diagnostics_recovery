@@ -142,11 +142,10 @@
 
 void service_init()
 {
-	gpio_init(gpio_pin_config, gpio_pin_config_size);
-	adc_init(adc_module_config , adc_module_config_size);
-	dma_init(dma_stream_config , dma_stream_count);
-
-
+	 FPU_Enable();
+	 nvic_init(38);
+	 gpio_init(gpio_pin_config , gpio_pin_config_size);
+	 uart_init(uart_config , uart_config_size);
 }
 
 void app_init()
@@ -159,11 +158,15 @@ int main(void)
 
 	service_init();
     app_init();
+	uart_print_interrupt_method("anas abdulla");
+
 
     while(1)
     {
-    	adc_start_conversion(adc1_ptr);
-    	adc_start_conversion(adc2_ptr);
+
+//    	uart_print("Anas");
+//    	adc_start_conversion(adc1_ptr);
+//    	adc_start_conversion(adc2_ptr);
 //    	adc_get_value(adc1_ptr , &adc_measurement[0]);
 //    	adc_get_value(adc1_ptr , &adc_measurement[1]);
 //    	adc_get_value(adc2_ptr , &adc_measurement[2]);

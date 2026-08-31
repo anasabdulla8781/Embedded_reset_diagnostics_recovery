@@ -27,12 +27,13 @@ typedef struct
     volatile uint32_t AFRH;      // 0x24: GPIO alternate function high register (pins 8–15)
 } GPIO_structure;
 
-typedef struct GPIO_PinConfig_t				// Init structure for the gpio pins using
+typedef struct GPIO_PinConfig_t				// Init structure for the gpio pins using in the project
 {
 	GPIO_structure* register_ptr;
 	uint8_t pin_number;
 	uint8_t mode;
 	uint8_t port_number;
+	uint8_t alternate_function_number;
 }GPIO_PinConfig_t;
 
 
@@ -107,6 +108,10 @@ typedef struct GPIO_PinConfig_t				// Init structure for the gpio pins using
 #define AF3	3
 #define AF4	4
 #define AF5	5
+#define AF6	6
+#define AF7	7
+#define AF15	15
+#define AF_INVALID	0XFF
 
 /// Macros for differant Ports
 #define PORTA	0

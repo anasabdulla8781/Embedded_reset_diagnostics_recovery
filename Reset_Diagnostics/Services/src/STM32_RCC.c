@@ -9,6 +9,7 @@
 #include <STM32_RCC.h>
 #include <STM32_I2C.h>
 #include <STM32_SPI.h>
+#include <STM32_UART.h>
 
 void LSI_clock_enable (void)
 {
@@ -17,11 +18,17 @@ void LSI_clock_enable (void)
 }
 
 
-// Function to enable the clock for UART 2 module . We need to enable the clock of USART2 module and GPIOA module
-void usart2_clock_enable(void)
+// Function to enable the clock for UART module . We need to enable the clock of USART2 module and GPIOA module
+void usart_clock_enable(uint8_t module_number)
 {
-	rcc_ptr->APB1ENR |= 1<<17;				/// Set the USART2 clock enable bit
-	rcc_ptr->AHB1ENR |= 1<<0;				/// Set the GPIOA clock enable bit
+	switch(module_number)
+	{
+	case USART_MODULE2:
+		rcc_ptr->APB1ENR |= 1<<17;				/// Set the USART2 clock enable bit
+		break;
+	default:
+		break;
+	}
 }
 
 
@@ -118,7 +125,7 @@ void reset_reason_check(volatile uint8_t *reset_reason_ptr)
     rcc_ptr->CSR |= (1 << 23);									// Clear all reset flags
 }
 
-void clock_enable_HSE(void)
+void clock_enable_HSE(void)											/// Default HSE Clock is coming with 8MHZ . that improves the accuracy
 {
 	// 1 . Enabling the HSE Clock
 	rcc_ptr->CR |= 1<<16;

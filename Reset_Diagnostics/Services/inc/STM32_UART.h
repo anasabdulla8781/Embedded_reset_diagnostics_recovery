@@ -11,6 +11,7 @@
 
 #include <STM32_GPIO.h>
 #include <STM32_RCC.h>
+#include <stddef.h>
 
 
 /// Function prototypes
@@ -26,6 +27,17 @@ typedef struct usart_structure
     volatile uint32_t GTPR;   // Guard time/prescaler      (offset 0x18)
 } usart_structure;
 
+
+typedef struct UART_Module_Config
+{
+	usart_structure* module_pointer_UART;
+	uint8_t module_number_UART;
+	uint32_t baud_rate;
+	uint8_t oversampling;
+	uint32_t clock;
+
+}UART_Module_Config;
+
 #define USART2_BASEADDRESS	0x40004400U
 
 
@@ -34,19 +46,25 @@ typedef struct usart_structure
 #define SET_OVERSAMPLING_8_SAMPLE	1
 #define SET_OVERSAMPLING_16_SAMPLE	0
 
+/// Macros for module numbers
+#define USART_MODULE2	2
 
+/// Macros for module pointers
 #define usart2_ptr		((usart_structure*)USART2_BASEADDRESS)
 
 
 /// variables
 extern uint8_t i;
+extern char *string;
 
 
 /// Function declarations
 
-void uart2_init(void);
-void uart2_set_baud_rate(uint32_t baud_rate , uint8_t oversampling);
-void uart2_enable(uint8_t oversampling);
+void uart_init(UART_Module_Config *config ,uint8_t uart_config_size);
+void uart_set_baud_rate(usart_structure* uart_ptr, uint32_t baud_rate , uint8_t oversampling , uint32_t clock);
+void uart_enable(usart_structure* uart_ptr, uint8_t oversampling);
+void uart_print_interrupt_method(char* str);
+
 void uart2_write_char(uint8_t charecter);
 void uart_print(char* str);
 uint8_t uart_read_char();

@@ -9,28 +9,26 @@
 #include "STM32_UART.h"
 
 uint8_t i;
+char *string = NULL;
 
-void uart2_init(void)
+/// *******************  Driver configuration for UART - START *******************
+
+void uart_init(UART_Module_Config *config ,uint8_t uart_config_size )
 {
-	// Step 1 - Enable the clocks
-	usart2_clock_enable();
-	// Step 2.1 - Set the GPIO Pins in alternalte fucntions mode for UART
-	gpio_pin_set_mode(2,PIN_ALTERNATE_FUNCTION,gpioa_ptr);
-	gpio_pin_set_mode(3,PIN_ALTERNATE_FUNCTION,gpioa_ptr);
-	// Step 2.2 - Set the alternate function corresponding to UART for PA2 and PA3
-	gpioa_ptr->AFRL	&= ~( 0x0F << 8  );	 		/// Clearing the bits
-	gpioa_ptr->AFRL |= ( 7 << 8 );				/// Setting into AF7 mode
-	gpioa_ptr->AFRL &= ~( 0x0F << 12  );	 	/// Clearing the bits
-	gpioa_ptr->AFRL |= ( 7 << 12 );				/// Setting into AF7 mode
-	// Step 3 - Set the baud rate
-	uart2_set_baud_rate(9600,0);
-	// Step 4 - Enable UART
-	uart2_enable(0);
+	for (uint8_t iter = 0 ; iter< uart_config_size ; iter++)
+	{
+		// Step 1 - Enable the UART clock ( We need to enable the clock for gpio as well where uart is connected . Make sure clock init function for GPIO Pins configured are called )
+		usart_clock_enable(config[iter].module_number_UART);
+		// Step 2 - Set the baud rate
+		uart_set_baud_rate(config[iter].module_pointer_UART , config[iter].baud_rate , config[iter].oversampling , config[iter].clock);
+		// Step 3 - Enable UART
+		uart_enable(config[iter].module_pointer_UART, config[iter].oversampling);
+	}
 }
 
-void uart2_set_baud_rate(uint32_t baud_rate , uint8_t oversampling)
+void uart_set_baud_rate(usart_structure* uart_ptr, uint32_t baud_rate , uint8_t oversampling , uint32_t clock)
 {
-	uint32_t internal_clock = 8000000;																	// 16Mhz clock
+	uint32_t internal_clock = clock;																	// Setting for internal clock
 	float usartdiv = (float)internal_clock / ((float)baud_rate * (8 * (2 - oversampling)));				// Finding the usartdiv using the equation
 	uint32_t mantassa = (uint32_t)usartdiv;
 	uint32_t fraction;
@@ -44,24 +42,35 @@ void uart2_set_baud_rate(uint32_t baud_rate , uint8_t oversampling)
 		fraction = (uint32_t)(( (float)(usartdiv - mantassa) * 16) + 0.5);
 		fraction &= 0x0F;      // keep only 4 bits
 	}
-	usart2_ptr->BRR = 0x0000;
-	usart2_ptr->BRR |= (mantassa << 4);
-	usart2_ptr->BRR |= fraction;
+	uart_ptr->BRR = 0x0000;
+	uart_ptr->BRR |= (mantassa << 4);
+	uart_ptr->BRR |= fraction;
 
 }
 
-void uart2_enable(uint8_t oversampling)
+void uart_enable(usart_structure* uart_ptr, uint8_t oversampling)
 {
 	/// Step 1 - Clearing CR Register for first time
-	usart2_ptr->CR1 = 0;
+	uart_ptr->CR1 = 0;
 	/// Step 2 - Setting the oversampling mode
-	usart2_ptr->CR1 |= (oversampling << 15);
+	uart_ptr->CR1 |= (oversampling << 15);
 	/// Step 3 - Enabling UART Rx and Tx
-	usart2_ptr->CR1 |=  1<<3;				/// Setting the uart TX
-	usart2_ptr->CR1 |=  1<<2;				/// Setting the uart RX
+	uart_ptr->CR1 |=  1<<3;				/// Setting the uart TX
+	uart_ptr->CR1 |=  1<<2;				/// Setting the uart RX
+	// Enable the interrupt for Trasmission
+	uart_ptr->CR1 |= 1<<7;				/// Interrupt is enabled
 	/// Step 4 - Enabling UART module
-	usart2_ptr->CR1 |=  1<<13;				/// Setting the uart enable bit
+	uart_ptr->CR1 |=  1<<13;				/// Setting the uart enable bit
 }
+
+
+// ******************** Driver configuration for UART - END ********************
+
+
+
+// ********************* Data writing over UART - START ********************
+
+/// Polling method
 
 // Step 5 - Function for writing the data
 void uart2_write_char(uint8_t charecter)
@@ -79,6 +88,18 @@ void uart_print(char* str)
 	}
 	uart2_write_char('\r');
 	uart2_write_char('\n');
+}
+
+// Interrrupt method
+
+void uart_print_interrupt_method(char* str)
+{
+	/// Copied the address of the str to string
+	string = str ;
+	/// We can make the interrupt enable if we are writing anything .. So that ISR will trigger if the DR is empty
+	usart2_ptr->CR1 |= 1<<7;			///Enabled TXIE
+	/// Writing the first charecter to the DR register so that from next time the interrupt will get generate proeprly
+//	usart2_ptr->DR = *string++;
 }
 
 // Step 7 - Function for reading from UART

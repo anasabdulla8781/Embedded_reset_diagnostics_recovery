@@ -8,9 +8,31 @@
 #include <STM32_GPIO.h>
 #include <STM32_RCC.h>
 
+
+void gpio_init(const GPIO_PinConfig_t* config ,  const uint8_t size)
+{
+	for (uint8_t iter = 0; iter<size ; iter++)
+	{
+		// Step 1 - Clock init for all the pins
+		gpio_clock_enable(config[iter].port_number);
+		// Step 2 - Set the configuration for the register
+		gpio_pin_set_mode(config[iter].pin_number , config[iter].mode , config[iter].register_ptr);
+		// Step 3 - Set to alternate function mode if its not invalid
+		if ((config[iter].alternate_function_number) != AF_INVALID)
+		{
+			gpio_set_alternate_function (config[iter].register_ptr , config[iter].pin_number , config[iter].alternate_function_number);
+		}
+		else
+		{
+			// Do nothing
+		}
+	}
+}
+
+
 void gpio_pin_set_mode(uint8_t pin , uint8_t mode , GPIO_structure* gpio_ptr)
 {
-	if (pin > 15 || mode > 3) return;			/// Safty logic , Dont give pin number more than 15 or no other modes than than 3
+	if (pin > 15 || mode > PIN_ANALOG_INPUT) return;			/// Safty logic , Dont give pin number more than 15 or no other modes than than 3
 
 	gpio_ptr->MODER &= ~(0X03<<(pin*2));		/// clearing the mode bits for that pin
 	gpio_ptr->MODER |= (mode << (pin*2));		/// Setting the mode bits for different kind of modes ( Input , Output , Alternate function , Analog input )
@@ -35,16 +57,19 @@ void gpio_output_operations (GPIO_structure* gpio_ptr , uint8_t pin , uint8_t st
 
 void gpio_set_alternate_function(GPIO_structure* gpio_ptr , uint8_t pin_number, uint8_t af_number)
 {
-	if (pin_number > 7 && pin_number <16)
-	{
-		gpio_ptr->AFRH &= ~ ( 0x0F <<((pin_number - 8)*4));					/// Clearing the alternate functions bits
-		gpio_ptr->AFRH |=   ( af_number <<((pin_number - 8)*4));
-	}
-	else if (pin_number >= 0  && pin_number <8)
+	if (af_number > AF15)
+	    return;
+	if (pin_number <8)
 	{
 		gpio_ptr->AFRL &= ~ ( 0x0F <<(pin_number*4));						/// Clearing the alternate functions bits
 		gpio_ptr->AFRL |=   ( af_number  <<(pin_number*4));
 	}
+	else if (pin_number < 16 )
+	{
+		gpio_ptr->AFRH &= ~ ( 0x0F <<((pin_number - 8)*4));					/// Clearing the alternate functions bits
+		gpio_ptr->AFRH |=   ( af_number <<((pin_number - 8)*4));
+	}
+
 }
 
 void gpio_set_output_type(GPIO_structure* gpio_ptr , uint8_t pin_number , uint8_t output_type)
@@ -115,16 +140,3 @@ void gpio_i2c_config(void)
 	gpio_set_pullup_pulldown(gpiob_ptr, 7 , PULLUP);
 }
 
-
-
-void gpio_init(const GPIO_PinConfig_t* config ,  const uint8_t size)
-{
-	for (uint8_t iter = 0; iter<size ; iter++)
-	{
-		// Step 1 - Clock init for all the pins
-		gpio_clock_enable(config[iter].port_number);
-		// Step 2 - Set the configuration for the register
-		gpio_pin_set_mode(config[iter].pin_number , config[iter].mode , config[iter].register_ptr);
-
-	}
-}
