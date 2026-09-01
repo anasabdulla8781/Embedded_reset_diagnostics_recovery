@@ -158,14 +158,17 @@ int main(void)
 
 	service_init();
     app_init();
+    uart_write_producer_linear("=== PROGRAM START ===");
 
 
 
     while(1)
     {
 
-    	uart_print_interrupt_method("anas abdulla\r\n");
-    	uart_print_interrupt_method("Anas\r\n");
+    	uart_write_producer_linear("anas abdulla");
+    	uart_write_producer_linear("Anas");
+    	uart_write_producer_linear("thamu");
+    	uart_write_producer_linear("anasssssssssssssssssssssssssssss");
 //    	adc_start_conversion(adc1_ptr);
 //    	adc_start_conversion(adc2_ptr);
 //    	adc_get_value(adc1_ptr , &adc_measurement[0]);

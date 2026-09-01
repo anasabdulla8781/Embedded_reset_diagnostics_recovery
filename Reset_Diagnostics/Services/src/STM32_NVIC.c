@@ -116,16 +116,20 @@ void EXTI0_IRQHandler(void)
 
 void USART2_IRQHandler(void)
 {
+	char str;
 	if (usart2_ptr->SR & (1 <<7))			/// TXE is set or not
 	{
-		if (*string == '\0')
+		if (uart_write_consumer_linear(&str))
 		{
-			usart2_ptr->CR1 &= ~(1<<7);
-			uart_tx_busy = 0;
+			usart2_ptr->DR = str;
 		}
 		else
 		{
-			usart2_ptr->DR = *string++;
+			usart2_ptr->CR1 &= ~(1<<7);
 		}
+	}
+	else
+	{
+		/// Do nothing for the moment .
 	}
 }

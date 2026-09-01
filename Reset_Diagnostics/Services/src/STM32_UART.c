@@ -117,6 +117,62 @@ uint8_t uart_read_char()
 }
 
 
+
+// ************************* Queue Implimentation for UART - START ***************************
+
+/// Linear TX Buffer
+
+
+char TX_Buffer_Linear[100];
+char* read_pointer_Linear = TX_Buffer_Linear;
+char* write_pointer_Linear = TX_Buffer_Linear;
+
+void uart_write_producer_linear(const char* str)		/// Here str is the string we are trhing to write . it shouldnt modify in middle
+{
+	/// Calculate the string length
+    uint8_t string_length = 0;
+    while (str[string_length] != '\0')
+    {
+        string_length++;
+    }
+
+	/// Condition for filling the buffer
+	if ((write_pointer_Linear >= (TX_Buffer_Linear+100)) || (TX_Buffer_Linear+100-write_pointer_Linear < (string_length+2)))
+	{
+		/// Buffer is already full . Exit the function without doing anything
+		return;
+	}
+	else
+	{
+		while (*str)
+		{
+			*write_pointer_Linear++ = *str;
+			str++;
+		}
+		*write_pointer_Linear++ = '\r';
+		*write_pointer_Linear++ = '\n';
+		usart2_ptr->CR1 |= 1<<7;			///Enabled TXIE
+	}
+}
+
+
+uint8_t uart_write_consumer_linear (char *str)
+{
+	if (read_pointer_Linear >= write_pointer_Linear)
+	{
+		return 0;
+	}
+	else
+	{
+		*str = *read_pointer_Linear ++;
+		return 1;
+	}
+}
+
+
+// ************************* Queue Implimentation for UART - END ***************************
+
+
 void uart_echo_test(uint8_t* ch , uint8_t size)
 {
     while (!(usart2_ptr->SR & (1<<5)));

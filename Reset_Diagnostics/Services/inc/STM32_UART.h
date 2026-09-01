@@ -58,6 +58,10 @@ extern uint8_t i;
 extern char *string;
 extern uint8_t uart_tx_busy;
 
+extern char TX_Buffer_Linear[100];
+extern char* read_pointer_Linear ;
+extern char* write_pointer_Linear;
+
 
 /// Function declarations
 
@@ -65,6 +69,8 @@ void uart_init(UART_Module_Config *config ,uint8_t uart_config_size);
 void uart_set_baud_rate(usart_structure* uart_ptr, uint32_t baud_rate , uint8_t oversampling , uint32_t clock);
 void uart_enable(usart_structure* uart_ptr, uint8_t oversampling);
 void uart_print_interrupt_method(char* str);
+void uart_write_producer_linear(const char* str);
+uint8_t uart_write_consumer_linear (char *str);
 
 void uart2_write_char(uint8_t charecter);
 void uart_print(char* str);
