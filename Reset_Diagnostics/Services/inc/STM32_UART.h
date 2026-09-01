@@ -56,6 +56,7 @@ typedef struct UART_Module_Config
 /// variables
 extern uint8_t i;
 extern char *string;
+extern uint8_t uart_tx_busy;
 
 
 /// Function declarations

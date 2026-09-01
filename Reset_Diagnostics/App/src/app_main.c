@@ -158,13 +158,14 @@ int main(void)
 
 	service_init();
     app_init();
-	uart_print_interrupt_method("anas abdulla");
+
 
 
     while(1)
     {
 
-//    	uart_print("Anas");
+    	uart_print_interrupt_method("anas abdulla\r\n");
+    	uart_print_interrupt_method("Anas\r\n");
 //    	adc_start_conversion(adc1_ptr);
 //    	adc_start_conversion(adc2_ptr);
 //    	adc_get_value(adc1_ptr , &adc_measurement[0]);

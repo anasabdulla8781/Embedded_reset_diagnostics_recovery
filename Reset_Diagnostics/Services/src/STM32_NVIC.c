@@ -116,12 +116,12 @@ void EXTI0_IRQHandler(void)
 
 void USART2_IRQHandler(void)
 {
-	if (usart2_ptr->SR & (1 <<7))			/// TXIE is enabled or not
+	if (usart2_ptr->SR & (1 <<7))			/// TXE is set or not
 	{
 		if (*string == '\0')
 		{
-			usart2_ptr->DR = '\0';
 			usart2_ptr->CR1 &= ~(1<<7);
+			uart_tx_busy = 0;
 		}
 		else
 		{

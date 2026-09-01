@@ -10,6 +10,7 @@
 
 uint8_t i;
 char *string = NULL;
+uint8_t uart_tx_busy = 0;
 
 /// *******************  Driver configuration for UART - START *******************
 
@@ -94,12 +95,18 @@ void uart_print(char* str)
 
 void uart_print_interrupt_method(char* str)
 {
-	/// Copied the address of the str to string
-	string = str ;
-	/// We can make the interrupt enable if we are writing anything .. So that ISR will trigger if the DR is empty
-	usart2_ptr->CR1 |= 1<<7;			///Enabled TXIE
-	/// Writing the first charecter to the DR register so that from next time the interrupt will get generate proeprly
-//	usart2_ptr->DR = *string++;
+	if (uart_tx_busy == 0)
+	{
+		/// Copied the address of the str to string
+		string = str ;
+		/// We can make the interrupt enable if we are writing anything .. So that ISR will trigger if the DR is empty
+		usart2_ptr->CR1 |= 1<<7;			///Enabled TXIE
+		uart_tx_busy = 1;
+	}
+	else
+	{
+		// Do nothing .. Uart is busy , we can skip the write request
+	}
 }
 
 // Step 7 - Function for reading from UART
