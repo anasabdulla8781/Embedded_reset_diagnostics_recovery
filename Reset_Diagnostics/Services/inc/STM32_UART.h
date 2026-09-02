@@ -16,6 +16,12 @@
 
 /// Function prototypes
 
+typedef enum
+{
+	UART_BUFFER_FULL,
+	UART_BUFFER_AVAILABLE
+}Uart_status;
+
 typedef struct usart_structure
 {
     volatile uint32_t SR;     // Status register           (offset 0x00)
@@ -39,6 +45,7 @@ typedef struct UART_Module_Config
 }UART_Module_Config;
 
 #define USART2_BASEADDRESS	0x40004400U
+#define TX_BUFFER_SIZE 100
 
 
 // Macros
@@ -63,6 +70,12 @@ extern char* read_pointer_Linear ;
 extern char* write_pointer_Linear;
 
 
+extern char TX_Buffer_circular[100];
+extern char* read_pointer_cicular;
+extern char* write_pointer_circular;
+extern volatile uint8_t current_count;
+
+
 /// Function declarations
 
 void uart_init(UART_Module_Config *config ,uint8_t uart_config_size);
@@ -79,6 +92,7 @@ void uart_echo_test(uint8_t* ch , uint8_t size);
 void itoa_custom(int32_t number , char* string);
 void str_reverse_inplace(char*string);
 void strcat_custom(char* buffer , char* string);
+Uart_status uart_write_producer_circular(const char*str);
 
 
 #endif /* INC_STM32_UART_H_ */

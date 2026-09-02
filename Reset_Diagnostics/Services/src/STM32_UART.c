@@ -170,6 +170,62 @@ uint8_t uart_write_consumer_linear (char *str)
 }
 
 
+/// Circular Buffer
+
+char TX_Buffer_circular[100];
+char* read_pointer_cicular = TX_Buffer_circular;
+char* write_pointer_circular = TX_Buffer_circular;
+volatile uint8_t current_count = 0;
+
+Uart_status uart_write_producer_circular(const char*str)
+{
+	/// Found the Legth of the string
+	uint8_t stringlength = 0;
+	while(str[stringlength] != '\0')
+	{
+		stringlength++;
+	}
+
+	/// If max size - Current count is less than (stringlength + 2) , we cant have that string in the buffer
+	if ((TX_BUFFER_SIZE - current_count) < (stringlength + 2))
+	{
+		return UART_BUFFER_FULL;
+	}
+
+	/// Add all the elements in the buffer
+	while (*str)
+	{
+		if (write_pointer_circular >= (TX_Buffer_circular + TX_BUFFER_SIZE))
+		{
+			write_pointer_circular = TX_Buffer_circular;
+		}
+		*write_pointer_circular++ = *str;
+		current_count++;
+		str++;
+	}
+
+	/// Handling the start of the line
+	if (write_pointer_circular >= (TX_Buffer_circular + TX_BUFFER_SIZE))
+	{
+		write_pointer_circular = TX_Buffer_circular;
+	}
+	*write_pointer_circular++ = '\r';
+	current_count++;
+
+	/// Handling new line
+	if (write_pointer_circular >= (TX_Buffer_circular + TX_BUFFER_SIZE))
+	{
+		write_pointer_circular = TX_Buffer_circular;
+	}
+	*write_pointer_circular++ = '\n';
+	current_count++;
+
+	/// Enable TXIE
+	usart2_ptr->CR1 |= 1<<7;
+
+	return UART_BUFFER_AVAILABLE;
+}
+
 // ************************* Queue Implimentation for UART - END ***************************
 
 
