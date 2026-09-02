@@ -71,7 +71,7 @@ extern char* write_pointer_Linear;
 
 
 extern char TX_Buffer_circular[100];
-extern char* read_pointer_cicular;
+extern char* read_pointer_circular;
 extern char* write_pointer_circular;
 extern volatile uint8_t current_count;
 
@@ -84,6 +84,8 @@ void uart_enable(usart_structure* uart_ptr, uint8_t oversampling);
 void uart_print_interrupt_method(char* str);
 void uart_write_producer_linear(const char* str);
 uint8_t uart_write_consumer_linear (char *str);
+Uart_status uart_write_producer_circular(const char*str);
+uint8_t uart_write_consumer_circular(char* str);
 
 void uart2_write_char(uint8_t charecter);
 void uart_print(char* str);
@@ -92,7 +94,7 @@ void uart_echo_test(uint8_t* ch , uint8_t size);
 void itoa_custom(int32_t number , char* string);
 void str_reverse_inplace(char*string);
 void strcat_custom(char* buffer , char* string);
-Uart_status uart_write_producer_circular(const char*str);
+
 
 
 #endif /* INC_STM32_UART_H_ */

@@ -173,7 +173,7 @@ uint8_t uart_write_consumer_linear (char *str)
 /// Circular Buffer
 
 char TX_Buffer_circular[100];
-char* read_pointer_cicular = TX_Buffer_circular;
+char* read_pointer_circular = TX_Buffer_circular;
 char* write_pointer_circular = TX_Buffer_circular;
 volatile uint8_t current_count = 0;
 
@@ -224,6 +224,29 @@ Uart_status uart_write_producer_circular(const char*str)
 	usart2_ptr->CR1 |= 1<<7;
 
 	return UART_BUFFER_AVAILABLE;
+}
+
+
+uint8_t uart_write_consumer_circular(char* str)
+{
+	if (current_count == 0)
+	{
+		return 0;
+	}
+
+	/// To pass the charecter
+	*str = *read_pointer_circular;
+	/// To point to the next charecter
+	if (read_pointer_circular == (TX_Buffer_circular + TX_BUFFER_SIZE - 1))
+	{
+		read_pointer_circular = TX_Buffer_circular;
+	}
+	else
+	{
+		read_pointer_circular++;
+	}
+	current_count--;
+	return 1 ;
 }
 
 // ************************* Queue Implimentation for UART - END ***************************

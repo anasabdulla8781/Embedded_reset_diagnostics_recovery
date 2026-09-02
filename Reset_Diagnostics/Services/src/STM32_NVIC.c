@@ -117,19 +117,18 @@ void EXTI0_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
 	char str;
-	if (usart2_ptr->SR & (1 <<7))			/// TXE is set or not
+
+	/// Check whether the TXE bit is set or not
+	if (usart2_ptr->SR & (1<<7))
 	{
-		if (uart_write_consumer_linear(&str))
+		if (uart_write_consumer_circular(&str))
 		{
 			usart2_ptr->DR = str;
 		}
 		else
 		{
+			/// Disable the interrupt .. Ohterwise this ISR will be always calling
 			usart2_ptr->CR1 &= ~(1<<7);
 		}
-	}
-	else
-	{
-		/// Do nothing for the moment .
 	}
 }
