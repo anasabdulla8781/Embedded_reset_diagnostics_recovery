@@ -172,7 +172,7 @@ uint8_t uart_write_consumer_linear (char *str)
 
 /// Circular Buffer
 
-char TX_Buffer_circular[100];
+char TX_Buffer_circular[TX_BUFFER_SIZE];
 char* read_pointer_circular = TX_Buffer_circular;
 char* write_pointer_circular = TX_Buffer_circular;
 volatile uint8_t current_count = 0;

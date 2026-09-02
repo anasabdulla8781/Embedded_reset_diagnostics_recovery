@@ -45,7 +45,7 @@ typedef struct UART_Module_Config
 }UART_Module_Config;
 
 #define USART2_BASEADDRESS	0x40004400U
-#define TX_BUFFER_SIZE 100
+#define TX_BUFFER_SIZE 1000
 
 
 // Macros
@@ -70,7 +70,7 @@ extern char* read_pointer_Linear ;
 extern char* write_pointer_Linear;
 
 
-extern char TX_Buffer_circular[100];
+extern char TX_Buffer_circular[TX_BUFFER_SIZE];
 extern char* read_pointer_circular;
 extern char* write_pointer_circular;
 extern volatile uint8_t current_count;

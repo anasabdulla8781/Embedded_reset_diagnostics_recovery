@@ -158,17 +158,17 @@ int main(void)
 
 	service_init();
     app_init();
-    uart_write_producer_circular("=== PROGRAM START ===");
+    uart_write_producer_circular("========================================");
+    uart_write_producer_circular("        RESET DIAGNOSTICS SYSTEM        ");
+    uart_write_producer_circular("========================================");
+    uart_write_producer_circular("      System Booted Successfully        ");
+    uart_write_producer_circular("----------------------------------------");
 
 
 
     while(1)
     {
 
-    	uart_write_producer_circular("anas abdulla");
-    	uart_write_producer_circular("Anas");
-    	uart_write_producer_circular("thamu");
-    	uart_write_producer_circular("anasssssssssssssssssssssssssssss");
 //    	adc_start_conversion(adc1_ptr);
 //    	adc_start_conversion(adc2_ptr);
 //    	adc_get_value(adc1_ptr , &adc_measurement[0]);
