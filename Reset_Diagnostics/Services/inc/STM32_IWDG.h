@@ -29,7 +29,7 @@ typedef struct
 typedef struct {
 	volatile iwdg_structure* module_pointer;
 	uint8_t prescalar;
-	uint16_t reload_counter;
+	uint16_t watchdog_set_time;
 }Watchdog_Module_Config;
 
 /// Base address
@@ -49,7 +49,8 @@ typedef struct {
 
 
 // Function declarations
-extern void init_independent_watchdog(volatile Watchdog_Module_Config config);
+extern void independent_watchdog_init(volatile Watchdog_Module_Config config);
+void IWDG_set_reload_Register(volatile Watchdog_Module_Config config);
 extern void feed_watchdog(void);
 extern void error_code(void);
 

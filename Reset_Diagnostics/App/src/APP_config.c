@@ -54,7 +54,7 @@ const uint8_t uart_config_size = sizeof(uart_config)/sizeof(uart_config[0]);
 const Watchdog_Module_Config watchdog_config = {
 		iwdg_ptr,				/// Module Poniter
 		6,						/// Prescalar
-		4000					/// Reload register
+		2					    /// Watchdog set time
 };
 
 // ****************************** WATCHDOG Configuration - END **********************************************************
