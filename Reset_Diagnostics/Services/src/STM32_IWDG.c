@@ -55,7 +55,7 @@ void IWDG_set_reload_Register(volatile Watchdog_Module_Config config)
 		break;
 	}
 
-	reload_count = ((config.watchdog_set_time)*32000 / (prescalar_devisor)) - 1;
+	reload_count = ((config.watchdog_set_time)*LSI_CLOCK_FREQUENCY / (prescalar_devisor)) - 1;
 	config.module_pointer->RLR = reload_count;
 }
 

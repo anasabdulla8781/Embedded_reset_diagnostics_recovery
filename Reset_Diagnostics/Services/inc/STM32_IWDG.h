@@ -47,6 +47,8 @@ typedef struct {
 #define IWDG_START						0xCCCC
 #define REFRESH_WATCHDOG				0xAAAA
 
+#define LSI_CLOCK_FREQUENCY			32000
+
 
 // Function declarations
 extern void independent_watchdog_init(volatile Watchdog_Module_Config config);
