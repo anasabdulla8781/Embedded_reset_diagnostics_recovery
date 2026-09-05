@@ -49,6 +49,16 @@ const uint8_t uart_config_size = sizeof(uart_config)/sizeof(uart_config[0]);
 
 // ******************************  UART Configuration - END *************************************************************
 
+// ****************************** WATCHDOG Configuration - START ********************************************************
+
+const Watchdog_Module_Config watchdog_config = {
+		iwdg_ptr,				/// Module Poniter
+		6,						/// Prescalar
+		4000					/// Reload register
+};
+
+// ****************************** WATCHDOG Configuration - END **********************************************************
+
 /// ADC Buffer initialisation
 volatile uint32_t adc_measurement[3] = {0u};
 
