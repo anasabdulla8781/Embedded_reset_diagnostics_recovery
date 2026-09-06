@@ -26,6 +26,12 @@ typedef struct
 } iwdg_structure;
 
 
+typedef struct {
+	volatile iwdg_structure* module_pointer;
+	uint8_t prescalar;
+	uint16_t watchdog_set_time;
+}Watchdog_Module_Config;
+
 /// Base address
 
 #define IWDG_BASEADDRESS	0x40003000
@@ -39,11 +45,14 @@ typedef struct
 
 #define PRESCALAR_AND_RELOAD_ACCESS		0x5555
 #define IWDG_START						0xCCCC
-#define RESET_WATCHDOG					0xAAAA
+#define REFRESH_WATCHDOG				0xAAAA
+
+#define LSI_CLOCK_FREQUENCY			32000
 
 
 // Function declarations
-extern void init_independent_watchdog(void);
+extern void independent_watchdog_init(volatile Watchdog_Module_Config config);
+void IWDG_set_reload_Register(volatile Watchdog_Module_Config config);
 extern void feed_watchdog(void);
 extern void error_code(void);
 

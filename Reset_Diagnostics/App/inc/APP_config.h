@@ -24,6 +24,9 @@
 extern const GPIO_PinConfig_t gpio_pin_config[] ;
 extern const uint8_t gpio_pin_config_size;
 
+/// WATCHDOG
+extern const Watchdog_Module_Config watchdog_config;
+
 
 // UART
 extern const UART_Module_Config uart_config[];
