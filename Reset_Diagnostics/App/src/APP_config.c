@@ -10,6 +10,10 @@
 
 #include "APP_config.h"
 
+
+// ****************************** Project specific variables **************************************************************
+
+
 // ******************************  GPIO Configuration - START *************************************************************
 
 /// The gpio pins needed to be configured for this project
@@ -49,12 +53,15 @@ const uint8_t uart_config_size = sizeof(uart_config)/sizeof(uart_config[0]);
 
 // ******************************  UART Configuration - END *************************************************************
 
+
+
+
 // ****************************** WATCHDOG Configuration - START ********************************************************
 
 const Watchdog_Module_Config watchdog_config = {
 		iwdg_ptr,				/// Module Poniter
 		6,						/// Prescalar
-		2					    /// Watchdog set time
+		10					    /// Watchdog set time
 };
 
 // ****************************** WATCHDOG Configuration - END **********************************************************

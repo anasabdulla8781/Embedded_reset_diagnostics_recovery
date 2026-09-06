@@ -147,6 +147,7 @@ void service_init()
 	 independent_watchdog_init(watchdog_config);
 	 gpio_init(gpio_pin_config , gpio_pin_config_size);
 	 uart_init(uart_config , uart_config_size);
+	 reset_reason_check(&reset_reason , reset_reason_string);
 }
 
 void app_init()
@@ -163,14 +164,15 @@ int main(void)
     uart_write_producer_circular("        RESET DIAGNOSTICS SYSTEM        ");
     uart_write_producer_circular("========================================");
     uart_write_producer_circular("      System Booted Successfully        ");
-    uart_write_producer_circular("----------------------------------------");
+    uart_write_producer_circular("========================================");
+    print_reset_reason();
 
 
 
     while(1)
     {
 
-    	feed_watchdog();
+//    	feed_watchdog();
 //    	adc_start_conversion(adc1_ptr);
 //    	adc_start_conversion(adc2_ptr);
 //    	adc_get_value(adc1_ptr , &adc_measurement[0]);
