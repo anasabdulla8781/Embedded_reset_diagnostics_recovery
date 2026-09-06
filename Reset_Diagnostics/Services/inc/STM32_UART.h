@@ -73,7 +73,7 @@ extern char* write_pointer_Linear;
 extern char TX_Buffer_circular[TX_BUFFER_SIZE];
 extern char* read_pointer_circular;
 extern char* write_pointer_circular;
-extern volatile uint8_t current_count;
+extern volatile uint16_t current_count;
 
 
 /// Function declarations

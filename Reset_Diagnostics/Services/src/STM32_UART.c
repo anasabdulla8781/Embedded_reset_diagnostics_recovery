@@ -175,7 +175,7 @@ uint8_t uart_write_consumer_linear (char *str)
 char TX_Buffer_circular[TX_BUFFER_SIZE];
 char* read_pointer_circular = TX_Buffer_circular;
 char* write_pointer_circular = TX_Buffer_circular;
-volatile uint8_t current_count = 0;
+volatile uint16_t current_count = 0;
 
 Uart_status uart_write_producer_circular(const char*str)
 {
@@ -359,6 +359,8 @@ void str_reverse_inplace(char*string)
 		j--;
 	}
 }
+
+
 
 void strcat_custom(char* buffer , char* string)
 {

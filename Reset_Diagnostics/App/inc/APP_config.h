@@ -20,6 +20,10 @@
 
 /// Variable declartion ( Configurations )
 
+/// RCC
+extern uint8_t reset_reason;
+extern char reset_reason_string[25];
+
 /// GPIO
 extern const GPIO_PinConfig_t gpio_pin_config[] ;
 extern const uint8_t gpio_pin_config_size;

@@ -11,6 +11,11 @@
 #include <STM32_SPI.h>
 #include <STM32_UART.h>
 
+
+uint8_t reset_reason = 0;
+char reset_reason_string[50] = {0};
+
+
 void LSI_clock_enable (void)
 {
 	rcc_ptr->CSR |= 1<<0;					/// Set the LSI clock
@@ -97,32 +102,58 @@ void spi_clock_enable(uint8_t module)
 	}
 }
 
-void reset_reason_check(volatile uint8_t *reset_reason_ptr)
+void reset_reason_check( volatile uint8_t *reset_reason_ptr, char *reset_reason_string)
 {
-    uint32_t csr = rcc_ptr->CSR;  								/// Read the reset reason only once
+    uint32_t csr = rcc_ptr->CSR;
 
-    if (csr & (1 << 29))
+    const char *message;
+
+    if (csr & (1U << 29))
+    {
         *reset_reason_ptr = INDEPENDENT_WATCHDOG_RESET;
-
-    else if (csr & (1 << 30))
+        message = "INDEPENDENT_WATCHDOG_RESET";
+    }
+    else if (csr & (1U << 30))
+    {
         *reset_reason_ptr = WINDOW_WATCHDOG_RESET;
-
-    else if (csr & (1 << 26))
-        *reset_reason_ptr = RESET_BUTTON_RESET;   					// NRST pin
-
-    else if (csr & (1 << 27))
-        *reset_reason_ptr = POWER_ON_RESET;       					// normal
-
-    else if (csr & (1 << 25))
-        *reset_reason_ptr = BROWN_OUT_RESET;      					// unstable power
-
-    else if (csr & (1 << 28))
-        *reset_reason_ptr = SOFTWARE_RESET;       					// NVIC_SystemReset
-
+        message = "WINDOW_WATCHDOG_RESET";
+    }
+    else if (csr & (1U << 26))
+    {
+        *reset_reason_ptr = RESET_BUTTON_RESET;
+        message = "RESET_BUTTON_RESET";
+    }
+    else if (csr & (1U << 27))
+    {
+        *reset_reason_ptr = POWER_ON_RESET;
+        message = "POWER_ON_RESET";
+    }
+    else if (csr & (1U << 25))
+    {
+        *reset_reason_ptr = BROWN_OUT_RESET;
+        message = "BROWN_OUT_RESET";
+    }
+    else if (csr & (1U << 28))
+    {
+        *reset_reason_ptr = SOFTWARE_RESET;
+        message = "SOFTWARE_RESET";
+    }
     else
+    {
         *reset_reason_ptr = UNKNOWN_RESET;
+        message = "UNKNOWN_RESET";
+    }
 
-    rcc_ptr->CSR |= (1 << 23);									// Clear all reset flags
+    while (*message != '\0')
+    {
+        *reset_reason_string++ = *message++;
+    }
+
+    *reset_reason_string++ = '\0';
+    *reset_reason_string++ = '\r';
+    *reset_reason_string = '\n';
+
+    rcc_ptr->CSR |= (1U << 24);
 }
 
 void clock_enable_HSE(void)											/// Default HSE Clock is coming with 8MHZ . that improves the accuracy
@@ -152,4 +183,21 @@ void dma_clock_enable(uint8_t module)
 {
 	rcc_ptr->AHB1ENR |= 1<< (20 + module);
 }
+
+
+void print_reset_reason (void)
+{
+	/// Temporary buffer to store what to print
+	char temporary_buffer[100] = {0};
+
+	strcat_custom(temporary_buffer , "        ");
+	strcat_custom(temporary_buffer , reset_reason_string);
+	strcat_custom(temporary_buffer , "        ");
+	uart_write_producer_circular(temporary_buffer);
+    uart_write_producer_circular("========================================");
+	temporary_buffer[0] = '\0';
+}
+
+
+
 
