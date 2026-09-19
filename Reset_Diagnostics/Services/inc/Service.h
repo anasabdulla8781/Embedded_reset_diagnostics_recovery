@@ -17,7 +17,7 @@
 #include <STM32_IWDG.h>
 #include <STM32_DBGMCU.h>
 #include "STM32_UART.h"
-#include <M4_FPU.h>
+#include <M4.h>
 #include <STM32_I2C.h>
 #include <STM32_SPI.h>
 #include <BMP_280.h>

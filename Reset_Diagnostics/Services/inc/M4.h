@@ -63,7 +63,11 @@ typedef struct
 #define scb_ptr     ((SCB_structure *)SCB_BASE_ADDRESS)
 
 
+#define application_interrupt_reset_control_Register		(volatile uint32_t* )0xE000ED0C
+
+
 void FPU_Enable(void);
+void software_reset(void);
 
 /*
  *

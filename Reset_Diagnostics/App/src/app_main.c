@@ -140,6 +140,8 @@
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
+uint8_t test_reset = 0;
+
 void service_init()
 {
 	 FPU_Enable();
@@ -165,6 +167,7 @@ int main(void)
     uart_write_producer_circular("========================================");
     uart_write_producer_circular("      System Booted Successfully        ");
     uart_write_producer_circular("========================================");
+    uart_write_producer_circular(temp_csr_print);
     print_reset_reason();
 
 
@@ -172,6 +175,11 @@ int main(void)
     while(1)
     {
 
+    	if (test_reset == 3)
+    	{
+    		test_reset = 0;
+    		software_reset();
+    	}
 //    	feed_watchdog();
 //    	adc_start_conversion(adc1_ptr);
 //    	adc_start_conversion(adc2_ptr);
