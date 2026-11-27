@@ -14,6 +14,7 @@
 
 uint8_t reset_reason = 0;
 char reset_reason_string[50] = {0};
+char temp_csr_print[50] = {0};
 
 
 void LSI_clock_enable (void)
@@ -105,6 +106,7 @@ void spi_clock_enable(uint8_t module)
 void reset_reason_check( volatile uint8_t *reset_reason_ptr, char *reset_reason_string)
 {
     uint32_t csr = rcc_ptr->CSR;
+    itoa_custom(csr , temp_csr_print);
 
     const char *message;
 
@@ -117,11 +119,6 @@ void reset_reason_check( volatile uint8_t *reset_reason_ptr, char *reset_reason_
     {
         *reset_reason_ptr = WINDOW_WATCHDOG_RESET;
         message = "WINDOW_WATCHDOG_RESET";
-    }
-    else if (csr & (1U << 26))
-    {
-        *reset_reason_ptr = RESET_BUTTON_RESET;
-        message = "RESET_BUTTON_RESET";
     }
     else if (csr & (1U << 27))
     {
@@ -137,6 +134,11 @@ void reset_reason_check( volatile uint8_t *reset_reason_ptr, char *reset_reason_
     {
         *reset_reason_ptr = SOFTWARE_RESET;
         message = "SOFTWARE_RESET";
+    }
+    else if (csr & (1U << 26))
+    {
+        *reset_reason_ptr = RESET_BUTTON_RESET;
+        message = "RESET_BUTTON_RESET";
     }
     else
     {

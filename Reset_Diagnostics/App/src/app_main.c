@@ -136,9 +136,19 @@
 #include "APP_task.h"
 #include "APP_config.h"
 
+#define MAGIC_NUMBER	26
+
 #if !defined(__SOFT_FP__) && defined(__ARM_FP)
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
+
+uint8_t test_reset = 0;
+
+__attribute__((section(".noinit")))
+uint8_t reset_count = 0;
+
+__attribute__((section(".noinit")))
+uint8_t magic_number = 0;
 
 void service_init()
 {
@@ -152,7 +162,11 @@ void service_init()
 
 void app_init()
 {
-	;
+	if (magic_number != MAGIC_NUMBER)
+	{
+		magic_number = MAGIC_NUMBER;
+		reset_count = 0;
+	}
 }
 
 int main(void)
@@ -165,6 +179,7 @@ int main(void)
     uart_write_producer_circular("========================================");
     uart_write_producer_circular("      System Booted Successfully        ");
     uart_write_producer_circular("========================================");
+    uart_write_producer_circular(temp_csr_print);
     print_reset_reason();
 
 
@@ -172,6 +187,12 @@ int main(void)
     while(1)
     {
 
+    	if (test_reset == 3)
+    	{
+    		test_reset = 0;
+    		reset_count++;
+    		software_reset();
+    	}
 //    	feed_watchdog();
 //    	adc_start_conversion(adc1_ptr);
 //    	adc_start_conversion(adc2_ptr);
