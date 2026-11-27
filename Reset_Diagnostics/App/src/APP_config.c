@@ -17,16 +17,63 @@
 // ******************************  GPIO Configuration - START *************************************************************
 
 /// The gpio pins needed to be configured for this project
+
 const GPIO_PinConfig_t gpio_pin_config[] = {
 
-		/// Generic GPIO Pins used in this project
-		{	gpioa_ptr,	PIN0,	PIN_ANALOG_INPUT,	PORTA	,AF_INVALID},
-		{	gpioa_ptr,	PIN1,	PIN_ANALOG_INPUT,	PORTA	,AF_INVALID},
-		{	gpiob_ptr,	PIN1,	PIN_ANALOG_INPUT,	PORTB	,AF_INVALID},
+    // Generic GPIO Pins used in this project
 
-		// GPIO Pin configurations for UART2
-		{	gpioa_ptr , PIN2 , PIN_ALTERNATE_FUNCTION , PORTA, AF7},
-		{	gpioa_ptr , PIN3 , PIN_ALTERNATE_FUNCTION , PORTA, AF7},
+    {
+        gpioa_ptr,                              // Register_ptr - Pointer to the structure A
+        PIN0,                                   // Pin_number - Pin 0 of Port A
+        PIN_ANALOG_INPUT,                       // Mode - Analog input
+        PORTA,                                  // Port_number - Port A
+        AF_UNDEFINED,                           // Alternate_function_number - Not used as alternate function
+    },
+
+    {
+        gpioa_ptr,                              // Register_ptr - Pointer to the structure A
+        PIN1,                                   // Pin_number - Pin 1 of Port A
+        PIN_ANALOG_INPUT,                       // Mode - Analog input
+        PORTA,                                  // Port_number - Port A
+        AF_UNDEFINED,                           // Alternate_function_number - Not used as alternate function
+    },
+
+    {
+        gpiob_ptr,                              // Register_ptr - Pointer to the structure B
+        PIN1,                                   // Pin_number - Pin 1 of Port B
+        PIN_ANALOG_INPUT,                       // Mode - Analog input
+        PORTB,                                  // Port_number - Port B
+        AF_UNDEFINED,                           // Alternate_function_number - Not used as alternate function
+    },
+
+    // GPIO Pin configurations for UART2 - For TX Line
+
+    {
+        gpioa_ptr,                              // Register_ptr - Pointer to the structure A
+        PIN2,                                   // Pin_number - Pin 2 of Port A
+        PIN_ALTERNATE_FUNCTION,                 // Mode - Alternate function mode
+        PORTA,                                  // Port_number - Port A
+        AF7,                                    // Alternate_function_number - AF7 (USART2_TX)
+        OUTPUT_PUSH_PULL,                       // Output_type - Push-pull
+        HIGH_SPEED,                             // output_speed - Set High speed
+        NO_PULLUP_PULLDOWN,                     // pullup_pulldown_config - No pull-up or pull-down
+        DEFAULT_HIGH,                           // Default state - UART TX line remains HIGH when idle
+    },
+
+    // GPIO Pin configurations for UART2 - For RX Line
+
+    {
+        gpioa_ptr,                              // Register_ptr - Pointer to the structure A
+        PIN3,                                   // Pin_number - Pin 3 of Port A
+        PIN_ALTERNATE_FUNCTION,                 // Mode - Alternate function mode
+        PORTA,                                  // Port_number - Port A
+        AF7,                                    // Alternate_function_number - AF7 (USART2_RX)
+        OUTPUT_PUSH_PULL,                       // Output_type - Not significant for UART input (RX)
+        HIGH_SPEED,                             // output_speed - Not significant for UART input (RX)
+        NO_PULLUP_PULLDOWN,                     // pullup_pulldown_config - No pull-up or pull-down
+        DEFAULT_HIGH,                           // Default state - UART RX line normally remains HIGH when idle
+    },
+
 };
 
 const uint8_t gpio_pin_config_size = sizeof(gpio_pin_config)/sizeof(gpio_pin_config[0]);
