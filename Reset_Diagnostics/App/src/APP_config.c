@@ -85,15 +85,30 @@ const uint8_t gpio_pin_config_size = sizeof(gpio_pin_config)/sizeof(gpio_pin_con
 
 // ******************************  UART Configuration - START *************************************************************
 
-const UART_Module_Config uart_config[] = {
-		{
-				usart2_ptr,				/// Module pointer UART - Pointer for uart module used
-				USART_MODULE2,			/// Module number UART - Module number for uart module
-				9600,					/// Uart_baud rate
-				0,						/// Uart Oversampling
-				16000000				/// Clock
-		}
+
+const UART_Module_Config uart_config[] =
+{
+    {
+        usart2_ptr,                 // Module pointer - Pointer to USART2
+        USART_MODULE2,              // Module number - USART2
+        9600,                       // Baud rate - 9600 bps
+        OVERSAMPLING_16,            // Oversampling - 16
+        SIXTEEN_MHZ_CLOCK,          // Peripheral clock - 16 MHz
+
+        PARITY_DISABLE,             // Parity - Disabled
+        PARITY_EVEN,                // Parity type - Even (Not used when parity is disabled)
+
+        ONE_STOP_BIT,               // Number of stop bits - 1
+
+        EIGHT_BIT_WORD_LENGTH,      // Word length - 8 bits
+
+        UART_TX_RX_ENABLE,          // Enable both TX and RX
+
+        TX_POLLING,                 // TX transfer method - Polling
+        RX_POLLING                  // RX transfer method - Polling
+    }
 };
+
 
 const uint8_t uart_config_size = sizeof(uart_config)/sizeof(uart_config[0]);
 

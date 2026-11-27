@@ -14,54 +14,115 @@ uint8_t uart_tx_busy = 0;
 
 /// *******************  Driver configuration for UART - START *******************
 
-void uart_init(UART_Module_Config *config ,uint8_t uart_config_size )
+void uart_init(const UART_Module_Config *config, uint8_t uart_config_size)
 {
-	for (uint8_t iter = 0 ; iter< uart_config_size ; iter++)
-	{
-		// Step 1 - Enable the UART clock ( We need to enable the clock for gpio as well where uart is connected . Make sure clock init function for GPIO Pins configured are called )
-		usart_clock_enable(config[iter].module_number_UART);
-		// Step 2 - Set the baud rate
-		uart_set_baud_rate(config[iter].module_pointer_UART , config[iter].baud_rate , config[iter].oversampling , config[iter].clock);
-		// Step 3 - Enable UART
-		uart_enable(config[iter].module_pointer_UART, config[iter].oversampling);
-	}
+    for (uint8_t iter = 0; iter < uart_config_size; iter++)
+    {
+        // Step 1 - Enable the UART peripheral clock
+        usart_clock_enable(config[iter].module_number_UART);
+
+        // Step 2 - Set the baud rate
+        uart_set_baud_rate(config[iter].module_pointer_UART,config[iter].baud_rate,config[iter].oversampling,config[iter].peripheral_clock);
+
+        // Step 3 - Configure and enable UART
+        uart_enable(&config[iter]);
+    }
 }
 
-void uart_set_baud_rate(usart_structure* uart_ptr, uint32_t baud_rate , uint8_t oversampling , uint32_t clock)
-{
-	uint32_t internal_clock = clock;																	// Setting for internal clock
-	float usartdiv = (float)internal_clock / ((float)baud_rate * (8 * (2 - oversampling)));				// Finding the usartdiv using the equation
-	uint32_t mantassa = (uint32_t)usartdiv;
-	uint32_t fraction;
-	if (oversampling == 1)		/// for oversampling of 8
-	{
-		fraction = (uint32_t)(( (float)(usartdiv - mantassa) * 8) + 0.5);
-		fraction &= 0x07;      // keep only 3 bits
-	}
-	else if (oversampling == 0)/// for oversampling of 16
-	{
-		fraction = (uint32_t)(( (float)(usartdiv - mantassa) * 16) + 0.5);
-		fraction &= 0x0F;      // keep only 4 bits
-	}
-	uart_ptr->BRR = 0x0000;
-	uart_ptr->BRR |= (mantassa << 4);
-	uart_ptr->BRR |= fraction;
 
+void uart_set_baud_rate(usart_structure *uart_ptr,uint32_t baud_rate,uint8_t oversampling,uint32_t clock)
+{
+    uint32_t usartdiv;
+    uint32_t mantissa;
+    uint32_t fraction;
+
+    // Step 1 - Calculate USARTDIV with rounding
+    usartdiv = (clock + (baud_rate / 2)) / baud_rate;
+
+    // Step 2 - Separate mantissa and fraction
+    if (oversampling == OVERSAMPLING_8)
+    {
+        mantissa = usartdiv / 8;
+        fraction = usartdiv % 8;
+
+        // Step 3 - Configure BRR for oversampling by 8
+        uart_ptr->BRR = (mantissa << 4) | fraction;
+    }
+
+    else if (oversampling == OVERSAMPLING_16)
+    {
+        mantissa = usartdiv / 16;
+        fraction = usartdiv % 16;
+
+        // Step 3 - Configure BRR for oversampling by 16
+        uart_ptr->BRR = (mantissa << 4) | fraction;
+    }
 }
 
-void uart_enable(usart_structure* uart_ptr, uint8_t oversampling)
+
+
+void uart_enable(const UART_Module_Config *config)
 {
-	/// Step 1 - Clearing CR Register for first time
-	uart_ptr->CR1 = 0;
-	/// Step 2 - Setting the oversampling mode
-	uart_ptr->CR1 |= (oversampling << 15);
-	/// Step 3 - Enabling UART Rx and Tx
-	uart_ptr->CR1 |=  1<<3;				/// Setting the uart TX
-	uart_ptr->CR1 |=  1<<2;				/// Setting the uart RX
-	// Enable the interrupt for Trasmission
-	uart_ptr->CR1 |= 1<<7;				/// Interrupt is enabled
-	/// Step 4 - Enabling UART module
-	uart_ptr->CR1 |=  1<<13;				/// Setting the uart enable bit
+    usart_structure *uart_ptr = config->module_pointer_UART;
+
+    // Step 1 - Clear control registers during initialization
+    uart_ptr->CR1 = 0;
+    uart_ptr->CR2 = 0;
+    uart_ptr->CR3 = 0;
+
+    // Step 2 - Configure oversampling
+    uart_ptr->CR1 |= (config->oversampling << 15);
+
+    // Step 3 - Configure word length
+    if (config->word_length == NINE_BIT_WORD_LENGTH)
+    {
+        uart_ptr->CR1 |= (1U << 12);
+    }
+
+    // Step 4 - Configure parity
+    if (config->parity_enable == PARITY_ENABLE)
+    {
+        uart_ptr->CR1 |= (1U << 10);   // Enable parity
+        if (config->parity_type == PARITY_ODD)
+        {
+            uart_ptr->CR1 |= (1U << 9);  // Select odd parity
+
+            // Enable parity error detection  ( No need to enable other error detections since those will be already enabled )
+            uart_ptr->CR1 |= (1<< 8);
+        }
+    }
+
+    // Step 5 - Configure number of stop bits
+    if (config->number_of_stopbits == TWO_STOP_BITS)
+    {
+        uart_ptr->CR2 |= (2U << 12);   // 2 stop bits
+    }
+
+    // Step 6 - Configure transmitter and receiver
+    if (config->tx_rx_enable & UART_TX_ENABLE)
+    {
+        uart_ptr->CR1 |= (1U << 3);    // Enable TX
+    }
+
+    if (config->tx_rx_enable & UART_RX_ENABLE)
+    {
+        uart_ptr->CR1 |= (1U << 2);    // Enable RX
+    }
+
+    // Step 7 - Configure RX interrupt if required
+    if (config->rx_transfer_method == RX_INTERRUPT)
+    {
+        uart_ptr->CR1 |= (1U << 5);    // RXNEIE
+    }
+
+    // Step 8 - Configure TX interrupt if required
+    if (config->tx_transfer_method == TX_INTERRUPT)
+    {
+        uart_ptr->CR1 |= (1U << 7);    // TXIE
+    }
+
+    // Step 8 - Enable USART peripheral
+    uart_ptr->CR1 |= (1U << 13);       // UE
 }
 
 
