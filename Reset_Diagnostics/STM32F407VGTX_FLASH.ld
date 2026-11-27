@@ -196,6 +196,16 @@ SECTIONS
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
   } >RAM
+  
+.noinit (NOLOAD) :
+{
+    . = ALIGN(4);
+
+    *(.noinit)
+    *(.noinit*)
+
+    . = ALIGN(4);
+} >RAM
 
   /* Remove information from the compiler libraries */
   /DISCARD/ :

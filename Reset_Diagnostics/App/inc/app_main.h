@@ -10,6 +10,9 @@
 
 #include "stddef.h"
 
+extern uint8_t reset_count;
+extern uint8_t magic_number;
+
 /// function declarations
 
 extern void service_init(void);
