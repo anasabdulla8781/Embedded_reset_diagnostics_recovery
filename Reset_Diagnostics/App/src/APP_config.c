@@ -80,7 +80,46 @@ const uint8_t gpio_pin_config_size = sizeof(gpio_pin_config)/sizeof(gpio_pin_con
 
 // ******************************  GPIO Configuration - END   *************************************************************
 
+// ******************************  NVIC Configuration - START *************************************************************
 
+// Init configuration for NVIC Module . Fixed configuration
+const NVIC_Config nvic_config[] =
+{
+		 // DMA interrupt configuration
+	    {
+	    		DMA0_STREAM0_INTERRUPT_NUMBER,					// Interrupt_number 11 - DMA interrupt enable
+				PRIORITY_LEVEL_5,								// Priority
+				INTERRUPT_ENABLE								// Enable / Disable
+	    },
+		// I2C event interrupt configuration
+		{
+				I2C1_EVENT_INTERRUPT_NUMBER,					// Interrupt_number 31 - I2C event interrupt enable
+				PRIORITY_LEVEL_5,								// Priority - 5
+				INTERRUPT_ENABLE								// Enable / Disable - Enable
+		},
+		// I2C error interrupt configuration
+		{
+				I2C1_ERROR_INTERRUPT_NUMBER,					// Interrupt_number 32 - I2C error interrupt enable
+				PRIORITY_LEVEL_5,								// Priority - 5
+				INTERRUPT_ENABLE								// Enable / Disable - Enable
+		},
+		// SPI1 error interrupt configuration
+		{
+				SPI1_INTERRUPT_NUMBER,							// Interrupt_number 35 - SPI Interrupt enable
+				PRIORITY_LEVEL_5,								// Priority - 5
+				INTERRUPT_ENABLE								// Enable / Disable - Enable
+		},
+		// USART2 Interrupt configuration
+		{
+				USART2_INTERRUPT_NUMBER,						// Interrupt_number 38 - USART2 Interrupt enable
+				PRIORITY_LEVEL_5,								// Priority - 5
+				INTERRUPT_ENABLE								// Enable / Disable - Enable
+		},
+};
+
+const uint8_t nvic_config_size = sizeof(nvic_config) / sizeof(nvic_config[0]);
+
+// ******************************  NVIC Configuration - END *************************************************************
 
 
 // ******************************  UART Configuration - START *************************************************************

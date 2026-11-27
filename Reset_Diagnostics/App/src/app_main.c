@@ -153,7 +153,7 @@ uint8_t magic_number = 0;
 void service_init()
 {
 	 FPU_Enable();
-	 nvic_init(38);
+	 nvic_init(nvic_config , nvic_config_size);
 	 independent_watchdog_init(watchdog_config);
 	 gpio_init(gpio_pin_config , gpio_pin_config_size);
 	 uart_init(uart_config , uart_config_size);

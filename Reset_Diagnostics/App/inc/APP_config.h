@@ -55,4 +55,8 @@ extern const uint8_t dma_stream_count;
 /// ADC Buffer
 extern volatile uint32_t adc_measurement[3];
 
+// NVIC
+extern const NVIC_Config nvic_config[];
+extern const uint8_t nvic_config_size;
+
 #endif /* INC_APP_CONFIG_H_ */
