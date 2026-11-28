@@ -153,11 +153,11 @@ uint8_t magic_number = 0;
 void service_init()
 {
 	 FPU_Enable();
-	 nvic_init(38);
+	 nvic_init(nvic_config , nvic_config_size);
 	 independent_watchdog_init(watchdog_config);
 	 gpio_init(gpio_pin_config , gpio_pin_config_size);
 	 uart_init(uart_config , uart_config_size);
-	 reset_reason_check(&reset_reason , reset_reason_string);
+	 reset_reason_check(reset_reason_string);
 }
 
 void app_init()
@@ -174,12 +174,11 @@ int main(void)
 
 	service_init();
     app_init();
-    uart_write_producer_circular("========================================");
-    uart_write_producer_circular("        RESET DIAGNOSTICS SYSTEM        ");
-    uart_write_producer_circular("========================================");
-    uart_write_producer_circular("      System Booted Successfully        ");
-    uart_write_producer_circular("========================================");
-    uart_write_producer_circular(temp_csr_print);
+    uart_write("========================================");
+    uart_write("        RESET DIAGNOSTICS SYSTEM        ");
+    uart_write("========================================");
+    uart_write("      System Booted Successfully        ");
+    uart_write("========================================");
     print_reset_reason();
 
 

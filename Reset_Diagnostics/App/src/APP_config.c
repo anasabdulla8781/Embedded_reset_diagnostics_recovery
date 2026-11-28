@@ -17,36 +17,137 @@
 // ******************************  GPIO Configuration - START *************************************************************
 
 /// The gpio pins needed to be configured for this project
+
 const GPIO_PinConfig_t gpio_pin_config[] = {
 
-		/// Generic GPIO Pins used in this project
-		{	gpioa_ptr,	PIN0,	PIN_ANALOG_INPUT,	PORTA	,AF_INVALID},
-		{	gpioa_ptr,	PIN1,	PIN_ANALOG_INPUT,	PORTA	,AF_INVALID},
-		{	gpiob_ptr,	PIN1,	PIN_ANALOG_INPUT,	PORTB	,AF_INVALID},
+    // Generic GPIO Pins used in this project
 
-		// GPIO Pin configurations for UART2
-		{	gpioa_ptr , PIN2 , PIN_ALTERNATE_FUNCTION , PORTA, AF7},
-		{	gpioa_ptr , PIN3 , PIN_ALTERNATE_FUNCTION , PORTA, AF7},
+    {
+        gpioa_ptr,                              // Register_ptr - Pointer to the structure A
+        PIN0,                                   // Pin_number - Pin 0 of Port A
+        PIN_ANALOG_INPUT,                       // Mode - Analog input
+        PORTA,                                  // Port_number - Port A
+        AF_UNDEFINED,                           // Alternate_function_number - Not used as alternate function
+    },
+
+    {
+        gpioa_ptr,                              // Register_ptr - Pointer to the structure A
+        PIN1,                                   // Pin_number - Pin 1 of Port A
+        PIN_ANALOG_INPUT,                       // Mode - Analog input
+        PORTA,                                  // Port_number - Port A
+        AF_UNDEFINED,                           // Alternate_function_number - Not used as alternate function
+    },
+
+    {
+        gpiob_ptr,                              // Register_ptr - Pointer to the structure B
+        PIN1,                                   // Pin_number - Pin 1 of Port B
+        PIN_ANALOG_INPUT,                       // Mode - Analog input
+        PORTB,                                  // Port_number - Port B
+        AF_UNDEFINED,                           // Alternate_function_number - Not used as alternate function
+    },
+
+    // GPIO Pin configurations for UART2 - For TX Line
+
+    {
+        gpioa_ptr,                              // Register_ptr - Pointer to the structure A
+        PIN2,                                   // Pin_number - Pin 2 of Port A
+        PIN_ALTERNATE_FUNCTION,                 // Mode - Alternate function mode
+        PORTA,                                  // Port_number - Port A
+        AF7,                                    // Alternate_function_number - AF7 (USART2_TX)
+        OUTPUT_PUSH_PULL,                       // Output_type - Push-pull
+        HIGH_SPEED,                             // output_speed - Set High speed
+        NO_PULLUP_PULLDOWN,                     // pullup_pulldown_config - No pull-up or pull-down
+        DEFAULT_HIGH,                           // Default state - UART TX line remains HIGH when idle
+    },
+
+    // GPIO Pin configurations for UART2 - For RX Line
+
+    {
+        gpioa_ptr,                              // Register_ptr - Pointer to the structure A
+        PIN3,                                   // Pin_number - Pin 3 of Port A
+        PIN_ALTERNATE_FUNCTION,                 // Mode - Alternate function mode
+        PORTA,                                  // Port_number - Port A
+        AF7,                                    // Alternate_function_number - AF7 (USART2_RX)
+        OUTPUT_PUSH_PULL,                       // Output_type - Not significant for UART input (RX)
+        HIGH_SPEED,                             // output_speed - Not significant for UART input (RX)
+        NO_PULLUP_PULLDOWN,                     // pullup_pulldown_config - No pull-up or pull-down
+        DEFAULT_HIGH,                           // Default state - UART RX line normally remains HIGH when idle
+    },
+
 };
 
 const uint8_t gpio_pin_config_size = sizeof(gpio_pin_config)/sizeof(gpio_pin_config[0]);
 
 // ******************************  GPIO Configuration - END   *************************************************************
 
+// ******************************  NVIC Configuration - START *************************************************************
 
+// Init configuration for NVIC Module . Fixed configuration
+const NVIC_Config nvic_config[] =
+{
+		 // DMA interrupt configuration
+	    {
+	    		DMA0_STREAM0_INTERRUPT_NUMBER,					// Interrupt_number 11 - DMA interrupt enable
+				PRIORITY_LEVEL_5,								// Priority
+				INTERRUPT_ENABLE								// Enable / Disable
+	    },
+		// I2C event interrupt configuration
+		{
+				I2C1_EVENT_INTERRUPT_NUMBER,					// Interrupt_number 31 - I2C event interrupt enable
+				PRIORITY_LEVEL_5,								// Priority - 5
+				INTERRUPT_ENABLE								// Enable / Disable - Enable
+		},
+		// I2C error interrupt configuration
+		{
+				I2C1_ERROR_INTERRUPT_NUMBER,					// Interrupt_number 32 - I2C error interrupt enable
+				PRIORITY_LEVEL_5,								// Priority - 5
+				INTERRUPT_ENABLE								// Enable / Disable - Enable
+		},
+		// SPI1 error interrupt configuration
+		{
+				SPI1_INTERRUPT_NUMBER,							// Interrupt_number 35 - SPI Interrupt enable
+				PRIORITY_LEVEL_5,								// Priority - 5
+				INTERRUPT_ENABLE								// Enable / Disable - Enable
+		},
+		// USART2 Interrupt configuration
+		{
+				USART2_INTERRUPT_NUMBER,						// Interrupt_number 38 - USART2 Interrupt enable
+				PRIORITY_LEVEL_5,								// Priority - 5
+				INTERRUPT_ENABLE								// Enable / Disable - Enable
+		},
+};
+
+const uint8_t nvic_config_size = sizeof(nvic_config) / sizeof(nvic_config[0]);
+
+// ******************************  NVIC Configuration - END *************************************************************
 
 
 // ******************************  UART Configuration - START *************************************************************
 
-const UART_Module_Config uart_config[] = {
-		{
-				usart2_ptr,				/// Module pointer UART - Pointer for uart module used
-				USART_MODULE2,			/// Module number UART - Module number for uart module
-				9600,					/// Uart_baud rate
-				0,						/// Uart Oversampling
-				16000000				/// Clock
-		}
+
+const UART_Module_Config uart_config[] =
+{
+    {
+        usart2_ptr,                 // Module pointer - Pointer to USART2
+        USART_MODULE2,              // Module number - USART2
+        9600,                       // Baud rate - 9600 bps
+        OVERSAMPLING_16,            // Oversampling - 16
+        SIXTEEN_MHZ_CLOCK,          // Peripheral clock - 16 MHz
+
+        PARITY_DISABLE,             // Parity - Disabled
+        PARITY_EVEN,                // Parity type - Even (Not used when parity is disabled)
+
+        ONE_STOP_BIT,               // Number of stop bits - 1
+
+        EIGHT_BIT_WORD_LENGTH,      // Word length - 8 bits
+
+        UART_TX_RX_ENABLE,          // Enable both TX and RX
+
+		TX_INTERRUPT,               // TX transfer method - Interrupt
+        RX_POLLING                  // RX transfer method - Polling
+    }
 };
+
 
 const uint8_t uart_config_size = sizeof(uart_config)/sizeof(uart_config[0]);
 

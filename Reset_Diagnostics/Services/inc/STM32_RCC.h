@@ -117,7 +117,7 @@ struct ADC_structure;
 
 extern void clock_enable_LSI(void);
 extern void clock_enable_HSE(void);
-extern void reset_reason_check(volatile uint8_t *reset_reason_ptr , char* reset_reson_string);
+extern void reset_reason_check( char *reset_reason_string);
 extern void adc_clock_enable(uint8_t module);
 extern void usart_clock_enable(uint8_t module_number);
 extern void i2c_clock_enable(uint8_t module);
