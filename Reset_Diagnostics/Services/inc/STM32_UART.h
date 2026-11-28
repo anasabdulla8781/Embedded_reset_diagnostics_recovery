@@ -22,6 +22,16 @@ typedef enum
 	UART_BUFFER_AVAILABLE
 }Uart_status;
 
+#define RING_BUFFER_CAPACITY 1000
+typedef struct RingBuffer_struct
+{
+	uint8_t buffer[RING_BUFFER_CAPACITY];			// Buffer
+	uint8_t* front_pointer;							// Write pointer
+	uint8_t* back_pointer;							// Read pointer
+	uint16_t capacity;								// Max capacity of the array
+	uint16_t overflowcounter_rx;					// Counter to show that we cant read anymore ( RX Buffer full )
+}RingBuffer_struct;
+
 typedef struct usart_structure
 {
     volatile uint32_t SR;     // Status register           (offset 0x00)

@@ -12,9 +12,9 @@
 #include <STM32_UART.h>
 
 
-uint8_t reset_reason = 0;
-char reset_reason_string[50] = {0};
-char temp_csr_print[50] = {0};
+// variables for checking the reset reason and CSR Register value for further debugging
+char reset_reason_string[200] = {0};
+char csr_register_content[50] = {0};
 
 
 void LSI_clock_enable (void)
@@ -103,58 +103,66 @@ void spi_clock_enable(uint8_t module)
 	}
 }
 
-void reset_reason_check( volatile uint8_t *reset_reason_ptr, char *reset_reason_string)
+void reset_reason_check( char *reset_reason_string)
 {
     uint32_t csr = rcc_ptr->CSR;
-    itoa_custom(csr , temp_csr_print);
+    itoa_custom(csr , csr_register_content);
 
-    const char *message;
+    char *message;
+    uint8_t counter = 0;							// Counter to count how many reset reasons are there
 
-    if (csr & (1U << 29))
+    for (uint8_t i= 25; i<31; i++)
     {
-        *reset_reason_ptr = INDEPENDENT_WATCHDOG_RESET;
-        message = "INDEPENDENT_WATCHDOG_RESET";
+    	if (csr & (1<<i))
+    	{
+    		switch (i)
+    		{
+    			case 25:
+    				message = "BROWN_OUT_RESET";
+    				counter++;
+    				break;
+    			case 26:
+    				message = "RESET_BUTTON_RESET";
+    				counter++;
+    				break;
+    			case 27:
+    				message = "POWER_ON_RESET";
+    				counter++;
+    				break;
+    			case 28:
+    				message = "SOFTWARE_RESET";
+    				counter++;
+    				break;
+    			case 29:
+    				message = "INDEPENDENT_WATCHDOG_RESET";
+    				counter++;
+    				break;
+    			case 30:
+    				message = "WINDOW_WATCHDOG_RESET";
+    				counter++;
+    				break;
+    			default:
+    				message = "UNKNOWN_RESET";
+    				counter++;
+    				break;
+    		}
+    		if (counter >1)
+    		{
+    			*reset_reason_string++ = '&';
+    		}
+    		while (*message != '\0')
+    		{
+    		    *reset_reason_string++ = *message;
+    		    *message = '\0';
+    		    message++;
+    		}
+    	}
+    	else
+    	{
+    		// No reset
+    	}
     }
-    else if (csr & (1U << 30))
-    {
-        *reset_reason_ptr = WINDOW_WATCHDOG_RESET;
-        message = "WINDOW_WATCHDOG_RESET";
-    }
-    else if (csr & (1U << 27))
-    {
-        *reset_reason_ptr = POWER_ON_RESET;
-        message = "POWER_ON_RESET";
-    }
-    else if (csr & (1U << 25))
-    {
-        *reset_reason_ptr = BROWN_OUT_RESET;
-        message = "BROWN_OUT_RESET";
-    }
-    else if (csr & (1U << 28))
-    {
-        *reset_reason_ptr = SOFTWARE_RESET;
-        message = "SOFTWARE_RESET";
-    }
-    else if (csr & (1U << 26))
-    {
-        *reset_reason_ptr = RESET_BUTTON_RESET;
-        message = "RESET_BUTTON_RESET";
-    }
-    else
-    {
-        *reset_reason_ptr = UNKNOWN_RESET;
-        message = "UNKNOWN_RESET";
-    }
-
-    while (*message != '\0')
-    {
-        *reset_reason_string++ = *message++;
-    }
-
-    *reset_reason_string++ = '\0';
-    *reset_reason_string++ = '\r';
-    *reset_reason_string = '\n';
-
+    // Clearing the CSR Register
     rcc_ptr->CSR |= (1U << 24);
 }
 
@@ -192,11 +200,21 @@ void print_reset_reason (void)
 	/// Temporary buffer to store what to print
 	char temporary_buffer[100] = {0};
 
+	// Printing the Reset reason
 	strcat_custom(temporary_buffer , "        ");
 	strcat_custom(temporary_buffer , reset_reason_string);
 	strcat_custom(temporary_buffer , "        ");
-	uart_write_producer_circular(temporary_buffer);
-    uart_write_producer_circular("========================================");
+	uart_write(temporary_buffer);
+	uart_write("========================================");
+	temporary_buffer[0] = '\0';
+
+//	 Printing the CSR Register content
+	strcat_custom(temporary_buffer , "        ");
+	strcat_custom(temporary_buffer , "CSR_ADDRESS - ");
+	strcat_custom(temporary_buffer , csr_register_content);
+	strcat_custom(temporary_buffer , "        ");
+	uart_write(temporary_buffer);
+	uart_write("========================================");
 	temporary_buffer[0] = '\0';
 }
 

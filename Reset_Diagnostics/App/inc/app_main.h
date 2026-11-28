@@ -12,6 +12,7 @@
 
 extern uint8_t reset_count;
 extern uint8_t magic_number;
+extern char csr_register_content[50];
 
 /// function declarations
 

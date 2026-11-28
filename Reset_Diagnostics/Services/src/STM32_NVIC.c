@@ -133,16 +133,16 @@ void nvic_init(const NVIC_Config *config, uint8_t count)
 //	}
 //}
 
-void USART2_IRQHandler (void)
-{
-	// Handle the flags
-
-	// 1- Handle TXE
-	if (usart2_ptr->SR | (1<<7))
-	{
-
-	}
-}
+//void USART2_IRQHandler (void)
+//{
+//	// Handle the flags
+//
+//	// 1- Handle TXE
+//	if (usart2_ptr->SR & (1<<7))
+//	{
+//
+//	}
+//}
 
 //void EXTI0_IRQHandler(void)
 //{
@@ -177,7 +177,7 @@ void USART2_IRQHandler(void)
 	/// Check whether the TXE bit is set or not
 	if (usart2_ptr->SR & (1<<7))
 	{
-		if (uart_write_consumer_circular(&str))
+		if (uart_write_consumer(&str))
 		{
 			usart2_ptr->DR = str;
 		}

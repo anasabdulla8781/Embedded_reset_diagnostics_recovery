@@ -143,7 +143,7 @@ const UART_Module_Config uart_config[] =
 
         UART_TX_RX_ENABLE,          // Enable both TX and RX
 
-        TX_POLLING,                 // TX transfer method - Polling
+		TX_INTERRUPT,               // TX transfer method - Interrupt
         RX_POLLING                  // RX transfer method - Polling
     }
 };
